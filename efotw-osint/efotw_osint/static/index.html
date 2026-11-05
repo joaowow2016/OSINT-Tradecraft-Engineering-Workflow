@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOVEREIGN-WATCH // OSINT Geopolitical Risk &amp; Early-Warning Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/vendor/plotly.min.js"></script>
+</head>
+<body>
+  <!-- TOP TACTICAL COMMAND BAR -->
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-mark">
+        <span class="pulse-dot"></span>
+        <span class="brand-code">SW//OSINT</span>
+      </div>
+      <div>
+        <h1 class="brand-title">SOVEREIGN-WATCH</h1>
+        <p class="brand-sub">Geopolitical Risk, Institutional Decay &amp; Early-Warning Workbench (EFOTW 1950–2024 × World Bank / WGI)</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="global-search-wrap">
+        <input
+          type="text"
+          id="quickJumpInput"
+          list="countryDatalist"
+          placeholder="Jump to ISO3 or Country (e.g. VEN, BRA, MMR)..."
+          autocomplete="off"
+        />
+        <datalist id="countryDatalist"></datalist>
+        <button id="quickJumpBtn" class="btn btn-accent">Inspect</button>
+      </div>
+      <div id="provenanceBadge" class="prov-pill prov-pass" title="Click to view SHA-256 Chain-of-Custody Vault">
+        SHA-256 VERIFIED • 165/165 API MATCH
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="nav-tabs" role="tablist">
+    <button class="tab-btn active" data-tab="tab-watchlist">
+      01 // Global Threat Matrix &amp; Watchlist
+    </button>
+    <button class="tab-btn" data-tab="tab-alerts">
+      02 // Early-Warning Alert Feed <span id="navAlertBadge" class="tab-badge">--</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-dossier">
+      03 // Country Intelligence Dossier
+    </button>
+    <button class="tab-btn" data-tab="tab-fusion">
+      04 // Cross-Source Lab &amp; Provenance Vault
+    </button>
+  </nav>
+
+  <main class="workspace">
+    <!-- ==================== TAB 1: GLOBAL WATCHLIST & THREAT MATRIX ==================== -->
+    <section id="tab-watchlist" class="tab-panel active">
+      <!-- Executive KPI Strip -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">JURISDICTIONS MONITORED</span>
+          <div class="kpi-value" id="kpiTotalCountries">--</div>
+          <span class="kpi-meta" id="kpiCycleMeta">1950–2024 Longitudinal Store</span>
+        </div>
+        <div class="kpi-card kpi-critical">
+          <span class="kpi-label">CRITICAL &amp; HIGH RISK REGIMES</span>
+          <div class="kpi-value" id="kpiCritHigh">--</div>
+          <span class="kpi-meta" id="kpiTierBreakdown">Loading threat posture...</span>
+        </div>
+        <div class="kpi-card kpi-warn">
+          <span class="kpi-label">ACTIVE EARLY-WARNING TRIGGERS</span>
+          <div class="kpi-value" id="kpiActiveAlerts">--</div>
+          <span class="kpi-meta" id="kpiCritAlertsMeta">Across 6 OSINT threat typologies</span>
+        </div>
+        <div class="kpi-card kpi-shock">
+          <span class="kpi-label">FASTEST 5Y STRUCTURAL DECAY</span>
+          <div class="kpi-value" id="kpiFastestDecay">--</div>
+          <span class="kpi-meta" id="kpiFastestDecayMeta">Time-consistent Panel Δ5Y</span>
+        </div>
+        <div class="kpi-card kpi-ok">
+          <span class="kpi-label">EVIDENCE CHAIN-OF-CUSTODY</span>
+          <div class="kpi-value" id="kpiProvStatus">--</div>
+          <span class="kpi-meta" id="kpiProvMeta">SHA-256 + Portal API Cross-Check</span>
+        </div>
+      </div>
+
+      <!-- World Map + Velocity Quadrant Row -->
+      <div class="grid-2-asym">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Global Geopolitical Risk &amp; Vulnerability Map</h2>
+              <p class="panel-subtitle">Click any jurisdiction on the map to open its full multi-source Country Intelligence Dossier</p>
+            </div>
+            <div class="panel-controls">
+              <label class="ctrl-label">Layer
+                <select id="mapMetricSelect" class="ctrl-select">
+                  <option value="composite_risk_score">Composite Sovereign Risk (0–100)</option>
+                  <option value="delta_5y">5-Year Regime Velocity (Panel Δ5Y)</option>
+                  <option value="inst_decay_risk">Institutional &amp; Judicial Decay Risk</option>
+                  <option value="monetary_stress_risk">Monetary Collapse &amp; Inflation Risk</option>
+                  <option value="capital_siege_risk">Capital Siege &amp; Black-Market FX Risk</option>
+                  <option value="state_coercion_risk">State Capture &amp; Coercion Risk</option>
+                  <option value="efw_score">EFOTW Headline Score (0–10)</option>
+                </select>
+              </label>
+              <label class="ctrl-label">Year
+                <select id="mapYearSelect" class="ctrl-select"></select>
+              </label>
+            </div>
+          </div>
+          <div id="worldMapChart" class="chart-box-lg"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">5-Year Regime Shock Quadrant</h2>
+              <p class="panel-subtitle">EFOTW Level (X) vs. 5Y Panel Velocity Δ5Y (Y) • Bubble = Sovereign Risk</p>
+            </div>
+          </div>
+          <div id="shockScatterChart" class="chart-box-lg"></div>
+        </div>
+      </div>
+
+      <!-- Regional Summary Strip -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Regional Theatre Threat Summary (Latest Cycle)</h2>
+            <p class="panel-subtitle">Aggregated sovereign risk posture, 5-year institutional drift, and acute regime concentration by World Bank theatre</p>
+          </div>
+        </div>
+        <div id="regionalCardsGrid" class="regional-grid"></div>
+      </div>
+
+      <!-- 165-Jurisdiction Watchlist Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Global Sovereign Risk Watchlist (<span id="watchlistCount">0</span> Jurisdictions)</h2>
+            <p class="panel-subtitle">Click any row to launch deep-dive Country Intelligence Dossier • Sortable by any threat vector</p>
+          </div>
+          <div class="panel-controls">
+            <input type="text" id="wlSearch" class="ctrl-input" placeholder="Filter country / ISO..." />
+            <select id="wlRegionFilter" class="ctrl-select">
+              <option value="ALL">All Regions</option>
+            </select>
+            <select id="wlTierFilter" class="ctrl-select">
+              <option value="ALL">All Threat Tiers</option>
+              <option value="CRITICAL">CRITICAL (≥62)</option>
+              <option value="HIGH">HIGH (48–61.9)</option>
+              <option value="ELEVATED">ELEVATED (36–47.9)</option>
+              <option value="GUARDED">GUARDED (25–35.9)</option>
+              <option value="LOW">LOW (&lt;25)</option>
+            </select>
+            <select id="wlArchetypeFilter" class="ctrl-select">
+              <option value="ALL">All ML Archetypes</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="intel-table" id="watchlistTable">
+            <thead>
+              <tr>
+                <th data-sort="risk_rank">Risk #</th>
+                <th data-sort="iso_code">ISO</th>
+                <th data-sort="country_name">Jurisdiction</th>
+                <th data-sort="threat_tier">Tier</th>
+                <th data-sort="composite_risk_score" class="num">Comp. Risk</th>
+                <th data-sort="efw_score" class="num">EFW (0–10)</th>
+                <th data-sort="delta_5y" class="num">5Y Panel Δ</th>
+                <th data-sort="inst_decay_risk" class="num">Inst. Decay</th>
+                <th data-sort="monetary_stress_risk" class="num">Monetary</th>
+                <th data-sort="capital_siege_risk" class="num">Cap. Siege</th>
+                <th data-sort="state_coercion_risk" class="num">Coercion</th>
+                <th data-sort="wgi_political_stability" class="num">WGI Stab.</th>
+                <th data-sort="alert_count" class="num">Alerts</th>
+                <th>ML Regime Archetype</th>
+              </tr>
+            </thead>
+            <tbody id="watchlistBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: EARLY-WARNING ALERT FEED ==================== -->
+    <section id="tab-alerts" class="tab-panel">
+      <div class="grid-2-alerts">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Automated Early-Warning Intelligence Feed (<span id="alertFeedCount">0</span>)</h2>
+              <p class="panel-subtitle">Deterministic multi-indicator triggers across coups, parallel FX traps, monetary collapse, judicial erosion &amp; WGI divergence</p>
+            </div>
+            <div class="panel-controls">
+              <input type="text" id="alertSearch" class="ctrl-input" placeholder="Search country or trigger..." />
+              <select id="alertYearFilter" class="ctrl-select"></select>
+              <select id="alertSevFilter" class="ctrl-select">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">CRITICAL</option>
+                <option value="HIGH">HIGH</option>
+                <option value="ELEVATED">ELEVATED</option>
+              </select>
+              <select id="alertTypeFilter" class="ctrl-select">
+                <option value="ALL">All Signal Typologies</option>
+                <option value="COUP_MILITARY_CAPTURE">COUP_MILITARY_CAPTURE</option>
+                <option value="PARALLEL_FX_CAPITAL_TRAP">PARALLEL_FX_CAPITAL_TRAP</option>
+                <option value="MONETARY_DISINTEGRATION">MONETARY_DISINTEGRATION</option>
+                <option value="AUTOCRATIC_JUDICIAL_EROSION">AUTOCRATIC_JUDICIAL_EROSION</option>
+                <option value="EXPROPRIATION_STATE_TAKEOVER">EXPROPRIATION_STATE_TAKEOVER</option>
+                <option value="CROSS_SOURCE_DIVERGENCE">CROSS_SOURCE_DIVERGENCE</option>
+              </select>
+            </div>
+          </div>
+          <div id="alertsContainer" class="alerts-feed"></div>
+        </div>
+
+        <div class="side-stack">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Fastest Deteriorating Regimes (5Y Z-Score)</h2>
+                <p class="panel-subtitle">Largest negative shifts in time-consistent Panel Dataset (2019 → 2024)</p>
+              </div>
+            </div>
+            <div id="decayBarChart" class="chart-box-md"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Positive Institutional Reformers</h2>
+                <p class="panel-subtitle">Strongest 5-year panel gains among non-crisis states (Risk &lt; 48)</p>
+              </div>
+            </div>
+            <div id="reformersList" class="reformers-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: COUNTRY INTELLIGENCE DOSSIER ==================== -->
+    <section id="tab-dossier" class="tab-panel">
+      <div class="panel dossier-selector-bar">
+        <div class="dossier-picker-row">
+          <div class="picker-left">
+            <label class="ctrl-label">TARGET JURISDICTION
+              <select id="dossierCountrySelect" class="ctrl-select ctrl-select-lg"></select>
+            </label>
+            <div class="quick-chips">
+              <span class="chip-hint">Priority Targets:</span>
+              <button class="chip-btn" data-iso="MMR">MMR · Myanmar</button>
+              <button class="chip-btn" data-iso="VEN">VEN · Venezuela</button>
+              <button class="chip-btn" data-iso="ARG">ARG · Argentina</button>
+              <button class="chip-btn" data-iso="BRA">BRA · Brazil</button>
+              <button class="chip-btn" data-iso="RUS">RUS · Russia</button>
+              <button class="chip-btn" data-iso="TUR">TUR · Türkiye</button>
+              <button class="chip-btn" data-iso="HKG">HKG · Hong Kong</button>
+              <button class="chip-btn" data-iso="IRN">IRN · Iran</button>
+              <button class="chip-btn" data-iso="CHE">CHE · Switzerland</button>
+              <button class="chip-btn" data-iso="USA">USA · United States</button>
+            </div>
+          </div>
+          <div class="picker-actions">
+            <a id="downloadMdBtn" class="btn btn-accent" href="#" download>Export Brief (.md)</a>
+            <button id="downloadJsonBtn" class="btn btn-outline">Export JSON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Executive Dossier Header Banner -->
+      <div id="dossierBanner" class="panel dossier-banner"></div>
+
+      <!-- Trajectory + 5-Vector Radar -->
+      <div class="grid-2-asym">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">75-Year Institutional &amp; Economic Trajectory (1950–2024)</h2>
+              <p class="panel-subtitle">Fuses 1950–1965 Historical Baseline + Time-Consistent Panel Series + Headline EFW + Regional Benchmark</p>
+            </div>
+          </div>
+          <div id="dossierTimelineChart" class="chart-box-md"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Five-Vector Threat Profile vs. Regional Peers</h2>
+              <p class="panel-subtitle">0–100 Vulnerability Scale (Outer edge = Acute Severity)</p>
+            </div>
+          </div>
+          <div id="dossierRadarChart" class="chart-box-md"></div>
+        </div>
+      </div>
+
+      <!-- Granular Sub-Indicators + WGI Cross-Verification & Alerts -->
+      <div class="grid-2-equal">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">21 Granular OSINT Sub-Indicators (Sorted by Vulnerability)</h2>
+              <p class="panel-subtitle">Exact Fraser Institute 0–10 component scores, 5-year shifts, and 0–100 risk exposure</p>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="intel-table">
+              <thead>
+                <tr>
+                  <th>Sub-Indicator</th>
+                  <th>Domain</th>
+                  <th class="num">Score (0–10)</th>
+                  <th class="num">5Y Δ</th>
+                  <th>Vulnerability Exposure</th>
+                </tr>
+              </thead>
+              <tbody id="dossierSubIndBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="side-stack">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Multi-Source Cross-Verification (World Bank &amp; WGI)</h2>
+                <p class="panel-subtitle">External open-source governance, macro &amp; military burden fusion</p>
+              </div>
+            </div>
+            <div id="dossierWgiGrid" class="wgi-cards-grid"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Jurisdiction Alert Log (2021–2024)</h2>
+                <p class="panel-subtitle">Triggered early-warning signals and historical anomalies</p>
+              </div>
+            </div>
+            <div id="dossierAlertsList" class="dossier-alerts-box"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: CROSS-SOURCE FUSION & PROVENANCE VAULT ==================== -->
+    <section id="tab-fusion" class="tab-panel">
+      <div class="grid-2-equal">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Cross-Source OSINT Correlation &amp; Divergence Lab</h2>
+              <p class="panel-subtitle">Correlate EFOTW metrics against live WGI / World Bank indicators • Click any point to inspect</p>
+            </div>
+            <div class="panel-controls">
+              <label class="ctrl-label">X-Axis
+                <select id="corrXSelect" class="ctrl-select">
+                  <option value="efw_score" selected>EFOTW Headline Score (0–10)</option>
+                  <option value="area2_legal_property">Area 2: Legal &amp; Property Rights</option>
+                  <option value="judicial_independence">2A: Judicial Independence</option>
+                  <option value="military_interference">2D: No Military Interference</option>
+                  <option value="capital_controls">4Dii: Capital Mobility</option>
+                  <option value="composite_risk_score">Composite Sovereign Risk (0–100)</option>
+                </select>
+              </label>
+              <label class="ctrl-label">Y-Axis
+                <select id="corrYSelect" class="ctrl-select">
+                  <option value="wgi_rule_of_law" selected>WGI Rule of Law (0–100)</option>
+                  <option value="wgi_political_stability">WGI Political Stability (0–100)</option>
+                  <option value="wgi_voice_accountability">WGI Voice &amp; Accountability (0–100)</option>
+                  <option value="wgi_control_corruption">WGI Control of Corruption (0–100)</option>
+                  <option value="wb_gdp_pcap_ppp">GDP per Capita PPP (USD)</option>
+                  <option value="wb_mil_exp_gdp">Military Expenditure (% GDP)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div id="corrStatsBanner" class="corr-stats-bar"></div>
+          <div id="corrScatterChart" class="chart-box-md"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Unsupervised ML Regime Clustering (2D PCA Projection)</h2>
+              <p class="panel-subtitle">K-Means (k=5) + Standardized PCA across threat vectors &amp; WGI governance indicators</p>
+            </div>
+          </div>
+          <div id="pcaClusterChart" class="chart-box-md" style="height: 415px;"></div>
+        </div>
+      </div>
+
+      <!-- Cryptographic Chain-of-Custody Evidence Ledger -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Cryptographic Chain-of-Custody &amp; OSINT Evidence Vault</h2>
+            <p class="panel-subtitle">Live SHA-256 verification of raw collected artifacts &amp; undocumented SPA API (/api/v1/ftw_get_all_data) cross-audit</p>
+          </div>
+          <div class="panel-controls">
+            <button id="reverifyBtn" class="btn btn-accent">Re-Audit SHA-256 Hashes</button>
+          </div>
+        </div>
+        <div id="crossVerBanner" class="xver-banner"></div>
+        <div class="table-scroll">
+          <table class="intel-table">
+            <thead>
+              <tr>
+                <th>Artifact ID</th>
+                <th>Integrity</th>
+                <th>Source URL / Endpoint</th>
+                <th>Local Evidence Path</th>
+                <th>SHA-256 Digest</th>
+                <th class="num">Size</th>
+                <th class="num">Records</th>
+                <th>Retrieved (UTC)</th>
+              </tr>
+            </thead>
+            <tbody id="provenanceTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

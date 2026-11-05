@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "efotw-osint"
+version = "1.0.0"
+description = "SOVEREIGN-WATCH: OSINT Geopolitical Risk & Early-Warning Platform powered by Fraser EFOTW (1950-2024) and World Bank/WGI feeds."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "openpyxl>=3.1",
+  "requests>=2.31",
+  "beautifulsoup4>=4.12",
+  "scikit-learn>=1.3",
+  "typer>=0.9",
+  "rich>=13.0",
+  "plotly>=5.18",
+]
+
+[project.scripts]
+sovereign-watch = "efotw_osint.cli_app:app"

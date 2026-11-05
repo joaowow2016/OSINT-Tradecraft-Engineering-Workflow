@@ -1,0 +1,77 @@
+{
+  "platform": "SOVEREIGN-WATCH OSINT Pipeline",
+  "schema_version": "1.0",
+  "created_at_utc": "2026-11-05T15:01:45Z",
+  "updated_at_utc": "2026-11-05T15:01:52Z",
+  "artifacts": {
+    "efotw_portal_html": {
+      "artifact_id": "efotw_portal_html",
+      "artifact_type": "HTML_SPA_SHELL_SNAPSHOT",
+      "source_url": "https://efotw.org/economic-freedom/dataset?geozone=world&page=dataset&min-year=2&max-year=0&filter=0",
+      "local_path": "data/raw/efotw_portal_snapshot.html",
+      "sha256": "8a7ccf82c0b4e2cd5aa14cefe4dbb4fd816c3e8f95dc3847c0049400e6626284",
+      "size_bytes": 25524,
+      "retrieved_at_utc": "2026-11-05T15:01:49Z",
+      "http_status": 200,
+      "etag": null,
+      "last_modified": null,
+      "content_type": null,
+      "record_count": 1,
+      "notes": "Inspected Drupal.settings SPA bundle -> discovered https://efotw.org/sites/all/modules/custom/ftw_maps_pages/files/efotw-2026-master-index-data-for-researchers-iso.xlsx"
+    },
+    "efotw_portal_internal_api": {
+      "artifact_id": "efotw_portal_internal_api",
+      "artifact_type": "INTERNAL_SPA_API_JSON",
+      "source_url": "https://efotw.org/api/v1/ftw_get_all_data",
+      "local_path": "data/raw/efotw_portal_api_ftw_all_data.json",
+      "sha256": "64eb8f61ddcef82f6492896ff145f7bc45804cc0cda54460ce288152a0f2eac3",
+      "size_bytes": 2921938,
+      "retrieved_at_utc": "2026-11-05T15:01:49Z",
+      "http_status": 200,
+      "etag": null,
+      "last_modified": "Thu, 05 Nov 2026 14:00:21 GMT",
+      "content_type": "application/json",
+      "record_count": 165,
+      "notes": "Undocumented /api/v1/ftw_get_all_data JSON endpoint extracted from scripts.min.js"
+    },
+    "efotw_master_xlsx": {
+      "artifact_id": "efotw_master_xlsx",
+      "artifact_type": "PRIMARY_XLSX_DATASET",
+      "source_url": "https://efotw.org/sites/all/modules/custom/ftw_maps_pages/files/efotw-2026-master-index-data-for-researchers-iso.xlsx",
+      "local_path": "data/raw/efotw_master_researcher_iso.xlsx",
+      "sha256": "51a77026143bb941c1b9159bbea521a46b750eee3e4cb7ba9b75279203e17146",
+      "size_bytes": 5076520,
+      "retrieved_at_utc": "2026-11-05T15:01:49Z",
+      "http_status": 200,
+      "etag": null,
+      "last_modified": null,
+      "content_type": null,
+      "record_count": null,
+      "notes": "Fraser Institute Economic Freedom of the World Master Index Data (ISO)"
+    },
+    "worldbank_wgi_api": {
+      "artifact_id": "worldbank_wgi_api",
+      "artifact_type": "EXTERNAL_OSINT_API_JSON",
+      "source_url": "https://api.worldbank.org/v2/country/all/indicator/* (WDI source=2 & WGI source=3)",
+      "local_path": "data/raw/worldbank_wgi_enrichment.json",
+      "sha256": "642a67b91a45931b3ad89244d757f555c5739b644a0b175972839be9115f4afd",
+      "size_bytes": 1507351,
+      "retrieved_at_utc": "2026-11-05T15:01:52Z",
+      "http_status": 200,
+      "etag": null,
+      "last_modified": null,
+      "content_type": null,
+      "record_count": 4264,
+      "notes": "Cached World Bank WDI & WGI enrichment indicators (2000-2025)"
+    }
+  },
+  "cross_verification": {
+    "status": "VERIFIED",
+    "portal_rows_scraped": 165,
+    "countries_cross_checked": 165,
+    "exact_matches": 165,
+    "agreement_pct": 100.0,
+    "discrepancies": [],
+    "verified_at_utc": "2026-11-05T15:01:52Z"
+  }
+}
